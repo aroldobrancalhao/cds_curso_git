@@ -265,23 +265,28 @@ def to_excel(df):
     # Salvar o DataFrame em um arquivo Excel
     writer = pd.ExcelWriter(output, engine="openpyxl")
     df.to_excel(writer, index=False, sheet_name="Sheet1")
-    writer.save()
     writer.close()
 
     # Carregar o arquivo Excel com o openpyxl
     book = openpyxl.load_workbook(output)
-    writer = pd.ExcelWriter(output, engine="openpyxl")
-    writer.book = book
-    writer.sheets = {ws.title: ws for ws in book.worksheets}
+    sheet = book["Sheet1"]
 
     # Ajustar a largura da coluna
-    sheet = writer.sheets["Sheet1"]
-    sheet.column_dimensions["A"].width = None
+    for column_cells in sheet.columns:
+        length = max(len(str(cell.value)) for cell in column_cells)
+        sheet.column_dimensions[column_cells[0].column_letter].width = length
 
     # Salvar o arquivo Excel modificado
-    writer.save()
-    writer.close()
+    output.seek(0)
+    book.save(output)
+    book.close()
 
     processed_data = output.getvalue()
 
     return processed_data
+
+
+
+
+
+
