@@ -262,9 +262,11 @@ def rd3_question_7(df):
 def to_excel(df):
     output = BytesIO()
 
+    # Salvar o DataFrame em um arquivo Excel
     writer = pd.ExcelWriter(output, engine="openpyxl")
     df.to_excel(writer, index=False, sheet_name="Sheet1")
     writer.save()
+    writer.close()
 
     # Carregar o arquivo Excel com o openpyxl
     book = openpyxl.load_workbook(output)
@@ -276,7 +278,9 @@ def to_excel(df):
     sheet = writer.sheets["Sheet1"]
     sheet.column_dimensions["A"].width = None
 
+    # Salvar o arquivo Excel modificado
     writer.save()
+    writer.close()
 
     processed_data = output.getvalue()
 
