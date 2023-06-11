@@ -263,12 +263,18 @@ def to_excel(df):
     output = BytesIO()
 
     writer = pd.ExcelWriter(output, engine="openpyxl")
-
     df.to_excel(writer, index=False, sheet_name="Sheet1")
+    writer.save()
 
-    worksheet = writer.sheets["Sheet1"]
+    # Carregar o arquivo Excel com o openpyxl
+    book = openpyxl.load_workbook(output)
+    writer = pd.ExcelWriter(output, engine="openpyxl")
+    writer.book = book
+    writer.sheets = {ws.title: ws for ws in book.worksheets}
 
-    worksheet.set_column("A:A", None)
+    # Ajustar a largura da coluna
+    sheet = writer.sheets["Sheet1"]
+    sheet.column_dimensions["A"].width = None
 
     writer.save()
 
